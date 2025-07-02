@@ -1,0 +1,34 @@
+{
+  "2025-07-02": {
+    "date": "2025-07-02",
+    "weight": 81.4,
+    "height": 181.0,
+    "age": 24,
+    "bmi": 24.85,
+    "steps": 4500,
+    "workout_notes": "shoulder workout",
+    "food": {
+      "Oats": 45.0,
+      "Whey Protein": 33.0,
+      "Skim Milk Powder": 46.0,
+      "PB Powder": 16.0,
+      "Nuts": 15.0,
+      "White Rice": 150.0,
+      "Tomato": 1.0,
+      "Onion": 1.0,
+      "Yogurt": 170.0,
+      "Tortilla": 1.0,
+      "Soya Chunks": 50.0,
+      "Whey Protein Shake": 33.0
+    },
+    "additional_meals": [],
+    "exercises": [],
+    "total_calories": 1325.0,
+    "total_protein": 141.0,
+    "net_calories": 800.0,
+    "is_gym_day": true,
+    "direct_calories": 150,
+    "total_calories_burned": 525.0,
+    "miles_walked": 3.75
+  }
+}

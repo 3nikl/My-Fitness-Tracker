@@ -106,45 +106,55 @@ def load_custom_css():
     </style>
     """, unsafe_allow_html=True)
 
-# Enhanced Food Database organized by meals
+# Enhanced Food Database organized by meals with correct values
 FOOD_DATA = {
     # Meal 1 Foods
     "Oats": {"unit": "g", "base": 45, "cal": 170, "protein": 10, "fat": 0, "meal": "Meal 1"},
-    "Whey Protein": {"unit": "g", "base": 34, "cal": 120, "protein": 25, "fat": 0, "meal": "Meal 1"},
-    "Skim Milk Powder": {"unit": "g", "base": 40, "cal": 160, "protein": 16, "fat": 0, "meal": "Meal 1"},
+    "Whey Protein": {"unit": "g", "base": 33, "cal": 120, "protein": 25, "fat": 0, "meal": "Meal 1"},
+    "Skim Milk Powder": {"unit": "g", "base": 46, "cal": 160, "protein": 16, "fat": 0, "meal": "Meal 1"},
     "PB Powder": {"unit": "g", "base": 16, "cal": 80, "protein": 7, "fat": 0, "meal": "Meal 1"},
-    "Nuts": {"unit": "g", "base": 15, "cal": 95, "protein": 2, "fat": 9, "meal": "Meal 1"},
+    "Nuts": {"unit": "g", "base": 15, "cal": 100, "protein": 2, "fat": 9, "meal": "Meal 1"},
     
     # Meal 2 Foods
     "White Rice": {"unit": "g", "base": 150, "cal": 210, "protein": 5, "fat": 0.5, "meal": "Meal 2"},
-    "Tomato": {"unit": "count", "base": 1, "cal": 20, "protein": 0, "fat": 0, "meal": "Meal 2"},
-    "Onion": {"unit": "count", "base": 1, "cal": 35, "protein": 0, "fat": 0, "meal": "Meal 2"},
+    "Tomato": {"unit": "count", "base": 1, "cal": 25, "protein": 0.5, "fat": 0, "meal": "Meal 2"},
+    "Onion": {"unit": "count", "base": 1, "cal": 25, "protein": 0.5, "fat": 0, "meal": "Meal 2"},
     "Yogurt": {"unit": "g", "base": 170, "cal": 90, "protein": 18, "fat": 0, "meal": "Meal 2"},
     "Tortilla": {"unit": "count", "base": 1, "cal": 70, "protein": 5, "fat": 2, "meal": "Meal 2"},
-    "Soya Chunks": {"unit": "g", "base": 30, "cal": 140, "protein": 30, "fat": 1, "meal": "Meal 2"},
+    "Soya Chunks": {"unit": "g", "base": 50, "cal": 155, "protein": 27, "fat": 1, "meal": "Meal 2"},
     
     # Meal 3 Foods
-    "Whey Protein Shake": {"unit": "g", "base": 34, "cal": 120, "protein": 25, "fat": 0, "meal": "Meal 3"},
+    "Whey Protein Shake": {"unit": "g", "base": 33, "cal": 120, "protein": 25, "fat": 0, "meal": "Meal 3"},
 }
 
 # Enhanced exercise data
 EXERCISE_DATA = {
-    "Walking": {"cal_per_min": 3.5, "icon": "🚶"},
-    "Running": {"cal_per_min": 10, "icon": "🏃"},
-    "Cycling": {"cal_per_min": 8, "icon": "🚴"},
-    "Swimming": {"cal_per_min": 12, "icon": "🏊"},
-    "Weight Training": {"cal_per_min": 6, "icon": "🏋️"},
-    "Yoga": {"cal_per_min": 3, "icon": "🧘"},
-    "HIIT": {"cal_per_min": 15, "icon": "💥"},
+    "Chest": {"intensity_1": 100, "intensity_2": 150, "intensity_3": 200, "icon": "💪"},
+    "Back": {"intensity_1": 100, "intensity_2": 150, "intensity_3": 200, "icon": "🏋️"},
+    "Bicep": {"intensity_1": 80, "intensity_2": 120, "intensity_3": 160, "icon": "💪"},
+    "Tricep": {"intensity_1": 80, "intensity_2": 120, "intensity_3": 160, "icon": "💪"},
+    "Shoulder": {"intensity_1": 90, "intensity_2": 135, "intensity_3": 180, "icon": "🏋️"},
+    "Legs": {"intensity_1": 120, "intensity_2": 180, "intensity_3": 240, "icon": "🦵"},
+    "Cardio": {"intensity_1": 200, "intensity_2": 300, "intensity_3": 400, "icon": "🏃"},
+    "Full Body": {"intensity_1": 150, "intensity_2": 225, "intensity_3": 300, "icon": "💥"},
 }
 
-# Fitness goals and recommendations
-DAILY_GOALS = {
-    "calories": {"min": 1800, "max": 2500, "optimal": 2200},
-    "protein": {"min": 100, "max": 200, "optimal": 150},
-    "water": {"min": 2000, "max": 4000, "optimal": 3000},  # ml
-    "steps": {"min": 8000, "max": 15000, "optimal": 10000},
-}
+# Dynamic fitness goals based on workout day
+def get_daily_goals(is_gym_day=True):
+    if is_gym_day:
+        return {
+            "calories": {"min": 1300, "max": 1400, "optimal": 1350},
+            "protein": {"min": 140, "max": 145, "optimal": 142},
+            "water": {"min": 2000, "max": 4000, "optimal": 3000},
+            "steps": {"min": 8000, "max": 15000, "optimal": 10000},
+        }
+    else:
+        return {
+            "calories": {"min": 1100, "max": 1200, "optimal": 1150},
+            "protein": {"min": 100, "max": 120, "optimal": 110},
+            "water": {"min": 2000, "max": 4000, "optimal": 3000},
+            "steps": {"min": 8000, "max": 15000, "optimal": 10000},
+        }
 
 STEPS_PER_MILE = 1200
 CAL_PER_MILE = 100
@@ -186,7 +196,7 @@ def calculate_macros(food_inputs):
     return total
 
 def calculate_bmi(weight, height_cm):
-    if weight <= 0 or height_cm <= 0:
+    if weight is None or height_cm is None or weight <= 0 or height_cm <= 0:
         return None
     height_m = height_cm / 100
     bmi = weight / (height_m ** 2)
@@ -286,25 +296,6 @@ def plot_enhanced_trends(data, key, title, ylabel, color="#667eea"):
     
     return fig
 
-def create_nutrition_pie_chart(categories_data):
-    if not categories_data:
-        return None
-    
-    labels = list(categories_data.keys())
-    values = [categories_data[cat]["cal"] for cat in labels]
-    
-    fig = px.pie(
-        values=values, 
-        names=labels, 
-        title="Calorie Distribution by Food Category",
-        color_discrete_sequence=px.colors.qualitative.Set3
-    )
-    
-    fig.update_layout(height=400, showlegend=True)
-    fig.update_traces(textposition='inside', textinfo='percent+label')
-    
-    return fig
-
 # ----------- Enhanced Streamlit App -----------------
 
 # Load custom CSS
@@ -384,18 +375,14 @@ def get_entry(date_str):
         "age": 24,        # Default age
         "bmi": None,
         "steps": 0,
-        "water_intake": 0,
         "workout_notes": "",
-        "mood": "😐",
-        "energy_level": 5,
-        "sleep_hours": 8,
         "food": {},
-        "extra_food": [],
         "additional_meals": [],
         "exercises": [],
         "total_calories": 0,
         "total_protein": 0,
         "net_calories": 0,
+        "is_gym_day": True,  # New field for workout day
     })
 
 entry = get_entry(selected_date_str)
@@ -404,16 +391,69 @@ entry = get_entry(selected_date_str)
 if page == "📝 Daily Entry":
     st.markdown(f"### 📝 Daily Entry - {selected_date_str}")
     
-    # Quick Goals Overview
+    # Gym Day Toggle
+    is_gym_day = st.toggle("🏋️ Gym Day", value=entry.get("is_gym_day", True))
+    DAILY_GOALS = get_daily_goals(is_gym_day)
+    
+    # Clickable Daily Goals Overview
+    st.markdown("### 🎯 Daily Goals (Click to Highlight Achievement)")
+    
     col1, col2, col3, col4 = st.columns(4)
+    
+    # Calculate current values for goal checking
+    current_cal = entry.get("total_calories", 0)
+    current_protein = entry.get("total_protein", 0)
+    current_steps = entry.get("steps", 0)
+    
     with col1:
-        st.markdown(create_metric_card("Calorie Goal", DAILY_GOALS["calories"]["optimal"], "kcal", "🎯", "#e74c3c"), unsafe_allow_html=True)
+        cal_achieved = current_cal >= DAILY_GOALS["calories"]["optimal"] * 0.9
+        if st.button("🎯 Calorie Goal", key="cal_goal"):
+            st.balloons() if cal_achieved else None
+        goal_color = "#2ecc71" if cal_achieved else "#e74c3c"
+        st.markdown(f"""
+        <div style="background: {goal_color}; color: white; padding: 10px; border-radius: 8px; text-align: center; margin: 5px 0;">
+            <strong>{DAILY_GOALS["calories"]["optimal"]} kcal</strong><br>
+            Current: {current_cal:.0f} {'✅' if cal_achieved else '❌'}
+        </div>
+        """, unsafe_allow_html=True)
+    
     with col2:
-        st.markdown(create_metric_card("Protein Goal", DAILY_GOALS["protein"]["optimal"], "g", "💪", "#2ecc71"), unsafe_allow_html=True)
+        protein_achieved = current_protein >= DAILY_GOALS["protein"]["optimal"] * 0.9
+        if st.button("💪 Protein Goal", key="protein_goal"):
+            st.balloons() if protein_achieved else None
+        goal_color = "#2ecc71" if protein_achieved else "#e74c3c"
+        st.markdown(f"""
+        <div style="background: {goal_color}; color: white; padding: 10px; border-radius: 8px; text-align: center; margin: 5px 0;">
+            <strong>{DAILY_GOALS["protein"]["optimal"]} g</strong><br>
+            Current: {current_protein:.0f} {'✅' if protein_achieved else '❌'}
+        </div>
+        """, unsafe_allow_html=True)
+    
     with col3:
-        st.markdown(create_metric_card("Water Goal", DAILY_GOALS["water"]["optimal"], "ml", "💧", "#3498db"), unsafe_allow_html=True)
+        steps_achieved = current_steps >= DAILY_GOALS["steps"]["optimal"] * 0.9
+        if st.button("👟 Step Goal", key="steps_goal"):
+            st.balloons() if steps_achieved else None
+        goal_color = "#2ecc71" if steps_achieved else "#f39c12"
+        st.markdown(f"""
+        <div style="background: {goal_color}; color: white; padding: 10px; border-radius: 8px; text-align: center; margin: 5px 0;">
+            <strong>{DAILY_GOALS["steps"]["optimal"]} steps</strong><br>
+            Current: {current_steps:,} {'✅' if steps_achieved else '❌'}
+        </div>
+        """, unsafe_allow_html=True)
+    
     with col4:
-        st.markdown(create_metric_card("Step Goal", DAILY_GOALS["steps"]["optimal"], "steps", "👟", "#f39c12"), unsafe_allow_html=True)
+        bmi = entry.get("bmi")
+        bmi_normal = (18.5 <= bmi <= 25) if bmi is not None else False
+        if st.button("⚖️ BMI Status", key="bmi_goal"):
+            st.balloons() if bmi_normal else None
+        goal_color = "#2ecc71" if bmi_normal else "#f39c12"
+        bmi_display = f"{bmi:.1f}" if bmi else "0.0"
+        st.markdown(f"""
+        <div style="background: {goal_color}; color: white; padding: 10px; border-radius: 8px; text-align: center; margin: 5px 0;">
+            <strong>BMI Status</strong><br>
+            Current: {bmi_display} {'✅' if bmi_normal else '❌'}
+        </div>
+        """, unsafe_allow_html=True)
 
     # Enhanced Food Input organized by Meals
     st.markdown("## 🍽️ Nutrition Tracking")
@@ -438,13 +478,12 @@ if page == "📝 Daily Entry":
             with cols[i % 2]:
                 info = FOOD_DATA[food]
                 unit_text = "grams" if info["unit"] == "g" else "count"
-                # Use proper default values
-                default_val = info["base"] if food == "Oats" else (info["base"] if food == "Whey Protein" else 0)
+                default_val = info["base"] if food in ["Oats", "Whey Protein", "Skim Milk Powder", "PB Powder", "Nuts"] else 0
                 food_inputs[food] = st.number_input(
                     f"{food} ({unit_text})",
                     min_value=0.0,
                     max_value=1000.0,
-                    step=1.0 if info["unit"] == "g" else 1,
+                    step=1.0,
                     value=float(entry["food"].get(food, default_val)),
                     key=f"food_{food}",
                     help=f"Calories per {info['base']}{info['unit'] if info['unit'] == 'g' else ' piece'}: {info['cal']}"
@@ -457,13 +496,12 @@ if page == "📝 Daily Entry":
             with cols[i % 2]:
                 info = FOOD_DATA[food]
                 unit_text = "grams" if info["unit"] == "g" else "count"
-                # Use proper default values
-                default_val = 1 if info["unit"] == "count" else 0
+                default_val = info["base"] if food in ["White Rice", "Yogurt", "Soya Chunks"] else (1 if info["unit"] == "count" else 0)
                 food_inputs[food] = st.number_input(
                     f"{food} ({unit_text})",
                     min_value=0.0,
                     max_value=1000.0,
-                    step=1.0 if info["unit"] == "g" else 1,
+                    step=1.0,
                     value=float(entry["food"].get(food, default_val)),
                     key=f"food_{food}",
                     help=f"Calories per {info['base']}{info['unit'] if info['unit'] == 'g' else ' piece'}: {info['cal']}"
@@ -476,12 +514,13 @@ if page == "📝 Daily Entry":
             with cols[i % 2]:
                 info = FOOD_DATA[food]
                 unit_text = "grams" if info["unit"] == "g" else "count"
+                default_val = info["base"] if food == "Whey Protein Shake" else 0
                 food_inputs[food] = st.number_input(
                     f"{food} ({unit_text})",
                     min_value=0.0,
                     max_value=1000.0,
-                    step=1.0 if info["unit"] == "g" else 1,
-                    value=float(entry["food"].get(food, 0)),
+                    step=1.0,
+                    value=float(entry["food"].get(food, default_val)),
                     key=f"food_{food}",
                     help=f"Calories per {info['base']}{info['unit'] if info['unit'] == 'g' else ' piece'}: {info['cal']}"
                 )
@@ -510,80 +549,111 @@ if page == "📝 Daily Entry":
     # Calculate and Show Current Totals
     st.markdown("## 📊 Current Meal Summary")
     
-    # Calculate current macros
-    current_macros = calculate_macros(food_inputs)
-    additional_cal = sum(item.get("calories", 0) for item in additional_meals)
-    total_current_cal = current_macros["cal"] + additional_cal
-    total_current_protein = current_macros["protein"]
+    # Add Calculate Button
+    if st.button("🧮 Calculate Current Intake", type="secondary", use_container_width=True):
+        # Calculate current macros
+        current_macros = calculate_macros(food_inputs)
+        additional_cal = sum(item.get("calories", 0) for item in additional_meals)
+        total_current_cal = current_macros["cal"] + additional_cal
+        total_current_protein = current_macros["protein"]
+        
+        # Store in session state to display
+        st.session_state.current_cal = total_current_cal
+        st.session_state.current_protein = total_current_protein
+        st.session_state.calorie_progress = (total_current_cal / DAILY_GOALS["calories"]["optimal"]) * 100
+        
+        st.success("✅ Intake calculated successfully!")
     
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Current Calories", f"{total_current_cal:.0f}", "kcal")
-    with col2:
-        st.metric("Current Protein", f"{total_current_protein:.1f}", "g")
-    with col3:
-        calorie_progress = (total_current_cal / DAILY_GOALS["calories"]["optimal"]) * 100
-        st.metric("Goal Progress", f"{calorie_progress:.1f}%", "of daily goal")
+    # Display current totals if calculated
+    if hasattr(st.session_state, 'current_cal'):
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Current Calories", f"{st.session_state.current_cal:.0f}", "kcal")
+        with col2:
+            st.metric("Current Protein", f"{st.session_state.current_protein:.1f}", "g")
+        with col3:
+            st.metric("Goal Progress", f"{st.session_state.calorie_progress:.1f}%", "of daily goal")
+    else:
+        st.info("👆 Click 'Calculate Current Intake' to see your meal totals")
 
-    # Enhanced Body & Activity Tracking
-    st.markdown("## 🏃‍♂️ Body & Activity")
+    # Body Metrics & Exercise Tracking
+    st.markdown("## 🏃‍♂️ Body Metrics & Exercise")
     
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("### 📏 Body Metrics")
-        weight = st.number_input("Weight (kg)", min_value=20.0, max_value=300.0, step=0.1, value=entry.get("weight", 70.0))
-        height = st.number_input("Height (cm)", min_value=50.0, max_value=250.0, step=0.1, value=entry.get("height", 181.0))
-        age = st.number_input("Age", min_value=1, max_value=120, step=1, value=entry.get("age", 24))
+        st.markdown("### 📏 Quick Body Check")
+        weight = st.number_input("Weight (kg)", min_value=20.0, max_value=300.0, step=0.1, value=entry.get("weight") if entry.get("weight") is not None else 70.0)
         
-        st.markdown("### 💧 Wellness")
-        water_intake = st.number_input("Water Intake (ml)", min_value=0, max_value=5000, step=100, value=entry.get("water_intake", 0))
-        sleep_hours = st.slider("Sleep Hours", 0.0, 12.0, entry.get("sleep_hours", 8.0), 0.5)
+        # Auto-calculate and show BMI
+        height = entry.get("height", 181.0)
+        age = entry.get("age", 24)
+        bmi = calculate_bmi(weight, height)
+        
+        if bmi is not None:
+            bmi_cat, bmi_color = get_bmi_category(bmi)
+            st.markdown(f"""
+            <div style="background: {bmi_color}20; border-left: 4px solid {bmi_color}; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                <strong>BMI: {bmi}</strong> ({bmi_cat})<br>
+                <small>Height: {height}cm | Age: {age}</small>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.info("Enter weight to calculate BMI")
         
     with col2:
-        st.markdown("### 🚶‍♂️ Activity")
-        steps = st.number_input("Steps", min_value=0, max_value=100000, step=100, value=entry.get("steps", 0))
+        st.markdown("### 🚶‍♂️ Activity Tracking")
         
-        st.markdown("### 😊 Mood & Energy")
-        mood_options = ["😢", "😕", "😐", "😊", "😁"]
-        mood = st.select_slider("Mood", options=mood_options, value=entry.get("mood", "😐"))
-        energy_level = st.slider("Energy Level", 1, 10, entry.get("energy_level", 5))
+        # Step Count Input
+        steps = st.number_input("Steps Today", min_value=0, max_value=100000, step=100, value=entry.get("steps", 0))
+        
+        # Calculate calories from steps
+        if steps > 0:
+            miles, step_calories = steps_to_miles_calories(steps)
+            st.info(f"🔥 Steps burned: {step_calories:.0f} calories ({miles:.1f} miles)")
 
     # Enhanced Exercise Tracking
-    st.markdown("### 🏋️‍♂️ Exercise Log")
+    st.markdown("### 🏋️‍♂️ Workout Tracking")
     exercises = entry.get("exercises", [])
     new_exercises = []
     
     for i, exercise in enumerate(exercises):
         col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
         with col1:
-            exercise_type = st.selectbox(f"Exercise #{i+1}", list(EXERCISE_DATA.keys()), 
-                                       index=list(EXERCISE_DATA.keys()).index(exercise.get("type", "Walking")) if exercise.get("type") in EXERCISE_DATA else 0,
-                                       key=f"ex_type_{i}")
+            workout_type = st.text_input(f"Workout #{i+1}", value=exercise.get("type", ""), key=f"workout_type_{i}", placeholder="e.g., Chest, Back, Cardio")
         with col2:
-            duration = st.number_input(f"Duration (min) #{i+1}", min_value=0, max_value=300, value=exercise.get("duration", 0), key=f"ex_dur_{i}")
+            intensity = st.selectbox(f"Intensity #{i+1}", [1, 2, 3], 
+                                   index=exercise.get("intensity", 1)-1, 
+                                   key=f"intensity_{i}",
+                                   help="1=Light(100cal), 2=Medium(150cal), 3=Heavy(200cal)")
         with col3:
-            calories = duration * EXERCISE_DATA[exercise_type]["cal_per_min"]
-            st.metric("Calories", f"{calories:.0f}")
+            # Calculate calories based on intensity
+            base_cal = {1: 100, 2: 150, 3: 200}
+            calories = base_cal.get(intensity, 100)
+            st.metric("Calories", f"{calories}")
         with col4:
-            if st.button("❌", key=f"remove_ex_{i}"):
+            if st.button("❌", key=f"remove_workout_{i}"):
                 continue
-        new_exercises.append({"type": exercise_type, "duration": duration, "calories": calories})
+        new_exercises.append({"type": workout_type, "intensity": intensity, "calories": calories})
     
-    if st.button("➕ Add Exercise"):
-        new_exercises.append({"type": "Walking", "duration": 0, "calories": 0})
+    if st.button("➕ Add Workout"):
+        new_exercises.append({"type": "", "intensity": 1, "calories": 100})
     
     exercises = new_exercises
-
+    
+    # OR Direct Calorie Input
+    st.markdown("#### 🔥 Or Enter Calories Burned Directly")
+    direct_calories = st.number_input("Total Workout Calories", min_value=0, max_value=2000, step=10, value=0)
+    
     # Workout Notes
-    workout_notes = st.text_area("📝 Workout Notes", value=entry.get("workout_notes", ""), height=100)
+    workout_notes = st.text_area("📝 Workout Notes", value=entry.get("workout_notes", ""), height=80)
 
     # Enhanced Save Button
     if st.button("💾 Save Daily Entry", type="primary", use_container_width=True):
         # Calculate all metrics
         macros = calculate_macros(food_inputs)
         additional_cal = sum(item.get("calories", 0) for item in additional_meals)
-        exercise_cal = sum(ex.get("calories", 0) for ex in exercises)
+        exercise_cal = sum(ex.get("calories", 0) for ex in exercises) + direct_calories
         
         total_calories = macros["cal"] + additional_cal
         total_protein = macros["protein"]
@@ -592,7 +662,7 @@ if page == "📝 Daily Entry":
         total_calories_burned = step_calories + exercise_cal
         net_calories = total_calories - total_calories_burned
         
-        bmi = calculate_bmi(weight, height)
+        bmi = calculate_bmi(weight, 181.0)  # Use fixed height
         
         # Update entry
         entry.update({
@@ -600,14 +670,12 @@ if page == "📝 Daily Entry":
             "additional_meals": additional_meals,
             "exercises": exercises,
             "weight": weight,
-            "height": height,
-            "age": age,
+            "height": 181.0,  # Fixed height
+            "age": 24,        # Fixed age
             "steps": steps,
-            "water_intake": water_intake,
-            "sleep_hours": sleep_hours,
-            "mood": mood,
-            "energy_level": energy_level,
             "workout_notes": workout_notes,
+            "direct_calories": direct_calories,
+            "is_gym_day": is_gym_day,
             "bmi": bmi,
             "total_calories": round(total_calories, 1),
             "total_protein": round(total_protein, 1),
@@ -630,7 +698,7 @@ if page == "📝 Daily Entry":
         with col2:
             st.metric("Total Protein", f"{total_protein:.1f}", "g")
         with col3:
-            st.metric("Net Calories", f"{net_calories:.0f}", "kcal")
+            st.metric("Net Calories", f"{net_calories:.0f}", "after exercise")
 
 # ----- PAGE: Analytics -----
 elif page == "📊 Analytics":
@@ -642,6 +710,10 @@ elif page == "📊 Analytics":
         
         with col1:
             st.markdown("#### 🎯 Daily Goals Progress")
+            
+            # Get current goals
+            is_gym_day = entry.get("is_gym_day", True)
+            DAILY_GOALS = get_daily_goals(is_gym_day)
             
             # Progress bars
             cal_progress = create_progress_bar(
@@ -659,14 +731,6 @@ elif page == "📊 Analytics":
                 "#2ecc71"
             )
             st.markdown(protein_progress, unsafe_allow_html=True)
-            
-            water_progress = create_progress_bar(
-                entry.get("water_intake", 0), 
-                DAILY_GOALS["water"]["optimal"], 
-                "Water (ml)", 
-                "#3498db"
-            )
-            st.markdown(water_progress, unsafe_allow_html=True)
             
             steps_progress = create_progress_bar(
                 entry.get("steps", 0), 
@@ -689,27 +753,21 @@ elif page == "📊 Analytics":
             net_cal = entry.get("net_calories", 0)
             net_color = "#2ecc71" if net_cal > 0 else "#e74c3c"
             st.markdown(create_metric_card("Net Calories", f"{net_cal:.0f}", "kcal", "⚡", net_color), unsafe_allow_html=True)
-            
-            # Energy & Mood
-            st.markdown(create_metric_card("Energy Level", f"{entry.get('energy_level', 5)}/10", "", "⚡", "#f39c12"), unsafe_allow_html=True)
-            st.markdown(create_metric_card("Mood", entry.get("mood", "😐"), "", "😊", "#9b59b6"), unsafe_allow_html=True)
 
-        # Nutrition Breakdown
+        # Daily Goals Achievement
         if entry.get("total_calories", 0) > 0:
             st.markdown("#### 🥘 Daily Goals Achievement")
             
             # Check if all goals are met
             goals_met = 0
-            total_goals = 4
+            total_goals = 3
             
             cal_achieved = entry.get("total_calories", 0) >= DAILY_GOALS["calories"]["optimal"] * 0.9
             protein_achieved = entry.get("total_protein", 0) >= DAILY_GOALS["protein"]["optimal"] * 0.9
-            water_achieved = entry.get("water_intake", 0) >= DAILY_GOALS["water"]["optimal"] * 0.9
             steps_achieved = entry.get("steps", 0) >= DAILY_GOALS["steps"]["optimal"] * 0.9
             
             if cal_achieved: goals_met += 1
             if protein_achieved: goals_met += 1
-            if water_achieved: goals_met += 1
             if steps_achieved: goals_met += 1
             
             if goals_met == total_goals:
@@ -735,8 +793,7 @@ elif page == "📊 Analytics":
         if entry.get("exercises"):
             st.markdown("#### 🏋️‍♂️ Exercise Summary")
             exercise_df = pd.DataFrame(entry["exercises"])
-            exercise_df["Icon"] = exercise_df["type"].map(lambda x: EXERCISE_DATA.get(x, {}).get("icon", "🏃"))
-            st.dataframe(exercise_df[["Icon", "type", "duration", "calories"]], use_container_width=True)
+            st.dataframe(exercise_df[["type", "intensity", "calories"]], use_container_width=True)
             
     else:
         st.info("📝 No data available for today. Please enter your daily data first!")
@@ -799,15 +856,13 @@ elif page == "📋 History":
             with col1:
                 st.markdown("#### 📊 Metrics")
                 metrics_df = pd.DataFrame({
-                    "Metric": ["Weight", "BMI", "Calories", "Protein", "Steps", "Water", "Sleep"],
+                    "Metric": ["Weight", "BMI", "Calories", "Protein", "Steps"],
                     "Value": [
                         f"{hist_entry.get('weight', 'N/A')} kg",
                         hist_entry.get('bmi', 'N/A'),
                         f"{hist_entry.get('total_calories', 0):.0f} kcal",
                         f"{hist_entry.get('total_protein', 0):.1f} g",
                         f"{hist_entry.get('steps', 0):,}",
-                        f"{hist_entry.get('water_intake', 0)} ml",
-                        f"{hist_entry.get('sleep_hours', 0)} hrs"
                     ]
                 })
                 st.dataframe(metrics_df, use_container_width=True)
@@ -869,10 +924,13 @@ elif page == "⚙️ Settings":
     
     with col1:
         st.markdown("#### 🎯 Goals Configuration")
-        new_cal_goal = st.number_input("Daily Calorie Goal", min_value=1000, max_value=5000, value=DAILY_GOALS["calories"]["optimal"])
-        new_protein_goal = st.number_input("Daily Protein Goal (g)", min_value=50, max_value=300, value=DAILY_GOALS["protein"]["optimal"])
-        new_water_goal = st.number_input("Daily Water Goal (ml)", min_value=1000, max_value=5000, value=DAILY_GOALS["water"]["optimal"])
-        new_steps_goal = st.number_input("Daily Steps Goal", min_value=5000, max_value=25000, value=DAILY_GOALS["steps"]["optimal"])
+        # Get current goals
+        is_gym_day = st.toggle("🏋️ Gym Day Goals", value=True)
+        current_goals = get_daily_goals(is_gym_day)
+        
+        new_cal_goal = st.number_input("Daily Calorie Goal", min_value=1000, max_value=5000, value=current_goals["calories"]["optimal"])
+        new_protein_goal = st.number_input("Daily Protein Goal (g)", min_value=50, max_value=300, value=current_goals["protein"]["optimal"])
+        new_steps_goal = st.number_input("Daily Steps Goal", min_value=5000, max_value=25000, value=current_goals["steps"]["optimal"])
     
     with col2:
         st.markdown("#### 🔐 Security")
@@ -884,8 +942,7 @@ elif page == "⚙️ Settings":
             st.info("Feature coming soon!")
         
         if st.button("🗑️ Clear All Data", type="secondary"):
-            if st.confirm("Are you sure you want to delete all data?"):
-                st.info("Feature coming soon!")
+            st.info("Feature coming soon!")
 
 # Logout button
 st.sidebar.markdown("---")
