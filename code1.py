@@ -99,33 +99,32 @@ def load_custom_css():
         margin: 0.5rem 0;
     }
     
-    .progress-fill {
-        height: 20px;
-        background: linear-gradient(90deg, #56ab2f 0%, #a8e6cf 100%);
-        transition: width 0.3s ease;
+    .progress-fill.completed {
+        background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
+        box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
     }
     </style>
     """, unsafe_allow_html=True)
 
-# Enhanced Food Database with categories and colors
+# Enhanced Food Database organized by meals
 FOOD_DATA = {
-    # Breakfast Foods
-    "Oats": {"unit": "g", "base": 45, "cal": 170, "protein": 10, "carbs": 28, "fat": 0, "category": "🥣 Breakfast", "color": "#FFB6C1"},
-    "Whey Protein": {"unit": "g", "base": 34, "cal": 120, "protein": 25, "carbs": 2.5, "fat": 0, "category": "💪 Protein", "color": "#98FB98"},
-    "Skim Milk Powder": {"unit": "g", "base": 40, "cal": 160, "protein": 16, "carbs": 18, "fat": 0, "category": "🥛 Dairy", "color": "#F0E68C"},
-    "PB Powder": {"unit": "g", "base": 16, "cal": 80, "protein": 7, "carbs": 6.2, "fat": 0, "category": "🥜 Nuts", "color": "#DEB887"},
-    "Nuts": {"unit": "g", "base": 15, "cal": 95, "protein": 2, "carbs": 4, "fat": 9, "category": "🥜 Nuts", "color": "#D2691E"},
+    # Meal 1 Foods
+    "Oats": {"unit": "g", "base": 45, "cal": 170, "protein": 10, "fat": 0, "meal": "Meal 1"},
+    "Whey Protein": {"unit": "g", "base": 34, "cal": 120, "protein": 25, "fat": 0, "meal": "Meal 1"},
+    "Skim Milk Powder": {"unit": "g", "base": 40, "cal": 160, "protein": 16, "fat": 0, "meal": "Meal 1"},
+    "PB Powder": {"unit": "g", "base": 16, "cal": 80, "protein": 7, "fat": 0, "meal": "Meal 1"},
+    "Nuts": {"unit": "g", "base": 15, "cal": 95, "protein": 2, "fat": 9, "meal": "Meal 1"},
     
-    # Main Meals
-    "White Rice": {"unit": "g", "base": 150, "cal": 210, "protein": 5, "carbs": 72, "fat": 0.5, "category": "🍚 Grains", "color": "#F5F5DC"},
-    "Tomato": {"unit": "count", "cal": 20, "protein": 0, "carbs": 0, "fat": 0, "category": "🍅 Vegetables", "color": "#FF6347"},
-    "Onion": {"unit": "count", "cal": 35, "protein": 0, "carbs": 0, "fat": 0, "category": "🧅 Vegetables", "color": "#F5DEB3"},
-    "Yogurt": {"unit": "g", "base": 170, "cal": 90, "protein": 18, "carbs": 7, "fat": 0, "category": "🥛 Dairy", "color": "#F0E68C"},
-    "Tortilla": {"unit": "count", "cal": 70, "protein": 5, "carbs": 12, "fat": 2, "category": "🌯 Wraps", "color": "#F4A460"},
-    "Soya Chunks": {"unit": "g", "base": 30, "cal": 140, "protein": 30, "carbs": 6, "fat": 1, "category": "💪 Protein", "color": "#98FB98"},
+    # Meal 2 Foods
+    "White Rice": {"unit": "g", "base": 150, "cal": 210, "protein": 5, "fat": 0.5, "meal": "Meal 2"},
+    "Tomato": {"unit": "count", "base": 1, "cal": 20, "protein": 0, "fat": 0, "meal": "Meal 2"},
+    "Onion": {"unit": "count", "base": 1, "cal": 35, "protein": 0, "fat": 0, "meal": "Meal 2"},
+    "Yogurt": {"unit": "g", "base": 170, "cal": 90, "protein": 18, "fat": 0, "meal": "Meal 2"},
+    "Tortilla": {"unit": "count", "base": 1, "cal": 70, "protein": 5, "fat": 2, "meal": "Meal 2"},
+    "Soya Chunks": {"unit": "g", "base": 30, "cal": 140, "protein": 30, "fat": 1, "meal": "Meal 2"},
     
-    # Supplements
-    "Whey Protein Shake": {"unit": "g", "base": 34, "cal": 120, "protein": 25, "carbs": 2, "fat": 0, "category": "💪 Protein", "color": "#98FB98"},
+    # Meal 3 Foods
+    "Whey Protein Shake": {"unit": "g", "base": 34, "cal": 120, "protein": 25, "fat": 0, "meal": "Meal 3"},
 }
 
 # Enhanced exercise data
@@ -164,8 +163,8 @@ def save_data(data):
         json.dump(data, f, indent=2)
 
 def calculate_macros(food_inputs):
-    """Calculate total macros from food input dict with enhanced tracking."""
-    total = {"cal": 0, "protein": 0, "carbs": 0, "fat": 0, "categories": {}}
+    """Calculate total macros from food input dict."""
+    total = {"cal": 0, "protein": 0, "fat": 0}
     
     for food, qty in food_inputs.items():
         if qty is None or qty == 0:
@@ -174,25 +173,15 @@ def calculate_macros(food_inputs):
         if not info:
             continue
             
-        category = info.get("category", "Other")
-        if category not in total["categories"]:
-            total["categories"][category] = {"cal": 0, "protein": 0}
-            
         if info["unit"] == "g":
             ratio = qty / info["base"]
-            cal_add = info["cal"] * ratio
-            protein_add = info["protein"] * ratio
-            total["cal"] += cal_add
-            total["protein"] += protein_add
-            total["carbs"] += info["carbs"] * ratio
+            total["cal"] += info["cal"] * ratio
+            total["protein"] += info["protein"] * ratio
             total["fat"] += info["fat"] * ratio
-            total["categories"][category]["cal"] += cal_add
-            total["categories"][category]["protein"] += protein_add
         elif info["unit"] == "count":
             total["cal"] += info["cal"] * qty
             total["protein"] += info["protein"] * qty
-            total["categories"][category]["cal"] += info["cal"] * qty
-            total["categories"][category]["protein"] += info["protein"] * qty
+            total["fat"] += info["fat"] * qty
     
     return total
 
@@ -223,19 +212,24 @@ def steps_to_miles_calories(steps):
 def get_today_date_str():
     return datetime.now().strftime("%Y-%m-%d")
 
-def create_progress_bar(current, goal, label, color="#667eea"):
+def create_progress_bar(current, goal, label, color="#667eea", completed=False):
     percentage = min((current / goal) * 100, 100) if goal > 0 else 0
+    is_complete = percentage >= 100
+    bar_class = "completed" if is_complete else ""
+    
     return f"""
     <div style="margin: 10px 0;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-            <span style="font-weight: bold;">{label}</span>
-            <span>{current:.1f} / {goal}</span>
+            <span style="font-weight: bold; color: {'#2ecc71' if is_complete else '#333'};">
+                {label} {'✅' if is_complete else ''}
+            </span>
+            <span style="color: {'#2ecc71' if is_complete else '#666'};">{current:.1f} / {goal}</span>
         </div>
         <div style="background: #e0e0e0; border-radius: 10px; overflow: hidden;">
-            <div style="height: 20px; width: {percentage}%; background: {color}; transition: width 0.3s ease;"></div>
+            <div class="progress-fill {bar_class}" style="height: 20px; width: {percentage}%; background: {'linear-gradient(90deg, #2ecc71 0%, #27ae60 100%)' if is_complete else color}; transition: width 0.3s ease;"></div>
         </div>
-        <div style="text-align: right; font-size: 12px; margin-top: 2px; color: #666;">
-            {percentage:.1f}%
+        <div style="text-align: right; font-size: 12px; margin-top: 2px; color: {'#2ecc71' if is_complete else '#666'};">
+            {percentage:.1f}% {'🎉 GOAL ACHIEVED!' if is_complete else ''}
         </div>
     </div>
     """
@@ -386,8 +380,8 @@ def get_entry(date_str):
     return data.get(date_str, {
         "date": date_str,
         "weight": None,
-        "height": None,
-        "age": None,
+        "height": 181.0,  # Default height
+        "age": 24,        # Default age
         "bmi": None,
         "steps": 0,
         "water_intake": 0,
@@ -397,6 +391,7 @@ def get_entry(date_str):
         "sleep_hours": 8,
         "food": {},
         "extra_food": [],
+        "additional_meals": [],
         "exercises": [],
         "total_calories": 0,
         "total_protein": 0,
@@ -420,58 +415,115 @@ if page == "📝 Daily Entry":
     with col4:
         st.markdown(create_metric_card("Step Goal", DAILY_GOALS["steps"]["optimal"], "steps", "👟", "#f39c12"), unsafe_allow_html=True)
 
-    # Enhanced Food Input with Categories
+    # Enhanced Food Input organized by Meals
     st.markdown("## 🍽️ Nutrition Tracking")
     
-    # Group foods by category
-    food_categories = {}
+    # Group foods by meal
+    meal_foods = {
+        "Meal 1": [],
+        "Meal 2": [],
+        "Meal 3": []
+    }
+    
     for food, info in FOOD_DATA.items():
-        category = info.get("category", "Other")
-        if category not in food_categories:
-            food_categories[category] = []
-        food_categories[category].append(food)
+        meal = info.get("meal", "Meal 1")
+        meal_foods[meal].append(food)
     
     food_inputs = {}
     
-    for category, foods in food_categories.items():
-        with st.expander(f"{category} Foods", expanded=True):
-            cols = st.columns(2)
-            for i, food in enumerate(foods):
-                with cols[i % 2]:
-                    info = FOOD_DATA[food]
-                    unit_text = "grams" if info["unit"] == "g" else "count"
-                    food_inputs[food] = st.number_input(
-                        f"{food} ({unit_text})",
-                        min_value=0.0,
-                        max_value=1000.0,
-                        step=1.0 if info["unit"] == "g" else 1,
-                        value=float(entry["food"].get(food, 0)),
-                        key=f"food_{food}",
-                        help=f"Calories per {info['base']}{info['unit'] if info['unit'] == 'g' else ' piece'}: {info['cal']}"
-                    )
+    # Meal 1
+    with st.expander("🌅 Meal 1 (Morning)", expanded=True):
+        cols = st.columns(2)
+        for i, food in enumerate(meal_foods["Meal 1"]):
+            with cols[i % 2]:
+                info = FOOD_DATA[food]
+                unit_text = "grams" if info["unit"] == "g" else "count"
+                # Use proper default values
+                default_val = info["base"] if food == "Oats" else (info["base"] if food == "Whey Protein" else 0)
+                food_inputs[food] = st.number_input(
+                    f"{food} ({unit_text})",
+                    min_value=0.0,
+                    max_value=1000.0,
+                    step=1.0 if info["unit"] == "g" else 1,
+                    value=float(entry["food"].get(food, default_val)),
+                    key=f"food_{food}",
+                    help=f"Calories per {info['base']}{info['unit'] if info['unit'] == 'g' else ' piece'}: {info['cal']}"
+                )
+    
+    # Meal 2
+    with st.expander("🌞 Meal 2 (Afternoon)", expanded=True):
+        cols = st.columns(2)
+        for i, food in enumerate(meal_foods["Meal 2"]):
+            with cols[i % 2]:
+                info = FOOD_DATA[food]
+                unit_text = "grams" if info["unit"] == "g" else "count"
+                # Use proper default values
+                default_val = 1 if info["unit"] == "count" else 0
+                food_inputs[food] = st.number_input(
+                    f"{food} ({unit_text})",
+                    min_value=0.0,
+                    max_value=1000.0,
+                    step=1.0 if info["unit"] == "g" else 1,
+                    value=float(entry["food"].get(food, default_val)),
+                    key=f"food_{food}",
+                    help=f"Calories per {info['base']}{info['unit'] if info['unit'] == 'g' else ' piece'}: {info['cal']}"
+                )
+    
+    # Meal 3
+    with st.expander("🌙 Meal 3 (Evening)", expanded=True):
+        cols = st.columns(2)
+        for i, food in enumerate(meal_foods["Meal 3"]):
+            with cols[i % 2]:
+                info = FOOD_DATA[food]
+                unit_text = "grams" if info["unit"] == "g" else "count"
+                food_inputs[food] = st.number_input(
+                    f"{food} ({unit_text})",
+                    min_value=0.0,
+                    max_value=1000.0,
+                    step=1.0 if info["unit"] == "g" else 1,
+                    value=float(entry["food"].get(food, 0)),
+                    key=f"food_{food}",
+                    help=f"Calories per {info['base']}{info['unit'] if info['unit'] == 'g' else ' piece'}: {info['cal']}"
+                )
 
-    # Enhanced Extra Foods
-    with st.expander("➕ Custom Foods", expanded=False):
-        extra_foods = entry.get("extra_food", [])
-        new_extra_foods = []
+    # Additional Meals Section
+    with st.expander("➕ Additional Meals", expanded=False):
+        additional_meals = entry.get("additional_meals", [])
+        new_additional_meals = []
         
-        for i in range(len(extra_foods)):
-            col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
+        for i in range(len(additional_meals)):
+            col1, col2, col3 = st.columns([3, 2, 1])
             with col1:
-                name = st.text_input(f"Food #{i+1}", value=extra_foods[i].get("name", ""), key=f"extra_name_{i}")
+                name = st.text_input(f"Meal Name #{i+1}", value=additional_meals[i].get("name", ""), key=f"add_meal_name_{i}")
             with col2:
-                cal = st.number_input(f"Calories #{i+1}", min_value=0.0, value=extra_foods[i].get("calories", 0.0), key=f"extra_cal_{i}")
+                cal = st.number_input(f"Calories #{i+1}", min_value=0.0, value=additional_meals[i].get("calories", 0.0), key=f"add_meal_cal_{i}")
             with col3:
-                prot = st.number_input(f"Protein #{i+1}", min_value=0.0, value=extra_foods[i].get("protein", 0.0), key=f"extra_prot_{i}")
-            with col4:
-                if st.button("❌", key=f"remove_{i}"):
+                if st.button("❌", key=f"remove_add_meal_{i}"):
                     continue
-            new_extra_foods.append({"name": name, "calories": cal, "protein": prot})
+            new_additional_meals.append({"name": name, "calories": cal})
         
-        if st.button("➕ Add Custom Food"):
-            new_extra_foods.append({"name": "", "calories": 0.0, "protein": 0.0})
+        if st.button("➕ Add Additional Meal"):
+            new_additional_meals.append({"name": "", "calories": 0.0})
         
-        extra_foods = new_extra_foods
+        additional_meals = new_additional_meals
+
+    # Calculate and Show Current Totals
+    st.markdown("## 📊 Current Meal Summary")
+    
+    # Calculate current macros
+    current_macros = calculate_macros(food_inputs)
+    additional_cal = sum(item.get("calories", 0) for item in additional_meals)
+    total_current_cal = current_macros["cal"] + additional_cal
+    total_current_protein = current_macros["protein"]
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Current Calories", f"{total_current_cal:.0f}", "kcal")
+    with col2:
+        st.metric("Current Protein", f"{total_current_protein:.1f}", "g")
+    with col3:
+        calorie_progress = (total_current_cal / DAILY_GOALS["calories"]["optimal"]) * 100
+        st.metric("Goal Progress", f"{calorie_progress:.1f}%", "of daily goal")
 
     # Enhanced Body & Activity Tracking
     st.markdown("## 🏃‍♂️ Body & Activity")
@@ -481,8 +533,8 @@ if page == "📝 Daily Entry":
     with col1:
         st.markdown("### 📏 Body Metrics")
         weight = st.number_input("Weight (kg)", min_value=20.0, max_value=300.0, step=0.1, value=entry.get("weight", 70.0))
-        height = st.number_input("Height (cm)", min_value=50.0, max_value=250.0, step=0.1, value=entry.get("height", 170.0))
-        age = st.number_input("Age", min_value=1, max_value=120, step=1, value=entry.get("age", 30))
+        height = st.number_input("Height (cm)", min_value=50.0, max_value=250.0, step=0.1, value=entry.get("height", 181.0))
+        age = st.number_input("Age", min_value=1, max_value=120, step=1, value=entry.get("age", 24))
         
         st.markdown("### 💧 Wellness")
         water_intake = st.number_input("Water Intake (ml)", min_value=0, max_value=5000, step=100, value=entry.get("water_intake", 0))
@@ -530,12 +582,11 @@ if page == "📝 Daily Entry":
     if st.button("💾 Save Daily Entry", type="primary", use_container_width=True):
         # Calculate all metrics
         macros = calculate_macros(food_inputs)
-        extra_cal = sum(item.get("calories", 0) for item in extra_foods)
-        extra_prot = sum(item.get("protein", 0) for item in extra_foods)
+        additional_cal = sum(item.get("calories", 0) for item in additional_meals)
         exercise_cal = sum(ex.get("calories", 0) for ex in exercises)
         
-        total_calories = macros["cal"] + extra_cal
-        total_protein = macros["protein"] + extra_prot
+        total_calories = macros["cal"] + additional_cal
+        total_protein = macros["protein"]
         
         miles, step_calories = steps_to_miles_calories(steps)
         total_calories_burned = step_calories + exercise_cal
@@ -546,7 +597,7 @@ if page == "📝 Daily Entry":
         # Update entry
         entry.update({
             "food": food_inputs,
-            "extra_food": extra_foods,
+            "additional_meals": additional_meals,
             "exercises": exercises,
             "weight": weight,
             "height": height,
@@ -563,7 +614,6 @@ if page == "📝 Daily Entry":
             "total_calories_burned": round(total_calories_burned, 1),
             "net_calories": round(net_calories, 1),
             "miles_walked": miles,
-            "macros_breakdown": macros["categories"],
             "date": selected_date_str
         })
         
@@ -571,6 +621,16 @@ if page == "📝 Daily Entry":
         save_data(data)
         
         st.markdown('<div class="success-box">✅ Entry saved successfully!</div>', unsafe_allow_html=True)
+        
+        # Show summary after saving
+        st.markdown("### 📊 Saved Summary")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total Calories", f"{total_calories:.0f}", "kcal")
+        with col2:
+            st.metric("Total Protein", f"{total_protein:.1f}", "g")
+        with col3:
+            st.metric("Net Calories", f"{net_calories:.0f}", "kcal")
 
 # ----- PAGE: Analytics -----
 elif page == "📊 Analytics":
@@ -635,11 +695,41 @@ elif page == "📊 Analytics":
             st.markdown(create_metric_card("Mood", entry.get("mood", "😐"), "", "😊", "#9b59b6"), unsafe_allow_html=True)
 
         # Nutrition Breakdown
-        if entry.get("macros_breakdown"):
-            st.markdown("#### 🥘 Nutrition Distribution")
-            pie_chart = create_nutrition_pie_chart(entry["macros_breakdown"])
-            if pie_chart:
-                st.plotly_chart(pie_chart, use_container_width=True)
+        if entry.get("total_calories", 0) > 0:
+            st.markdown("#### 🥘 Daily Goals Achievement")
+            
+            # Check if all goals are met
+            goals_met = 0
+            total_goals = 4
+            
+            cal_achieved = entry.get("total_calories", 0) >= DAILY_GOALS["calories"]["optimal"] * 0.9
+            protein_achieved = entry.get("total_protein", 0) >= DAILY_GOALS["protein"]["optimal"] * 0.9
+            water_achieved = entry.get("water_intake", 0) >= DAILY_GOALS["water"]["optimal"] * 0.9
+            steps_achieved = entry.get("steps", 0) >= DAILY_GOALS["steps"]["optimal"] * 0.9
+            
+            if cal_achieved: goals_met += 1
+            if protein_achieved: goals_met += 1
+            if water_achieved: goals_met += 1
+            if steps_achieved: goals_met += 1
+            
+            if goals_met == total_goals:
+                st.markdown("""
+                <div style="background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%); 
+                           padding: 20px; border-radius: 10px; text-align: center; 
+                           color: white; margin: 20px 0;">
+                    <h2>🎉 DAILY GOALS ACHIEVED! 🎉</h2>
+                    <p>Congratulations! You've met all your daily targets!</p>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div style="background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%); 
+                           padding: 15px; border-radius: 10px; text-align: center; 
+                           color: white; margin: 20px 0;">
+                    <h3>📊 Daily Progress: {goals_met}/{total_goals} Goals Met</h3>
+                    <p>Keep going! You're making great progress!</p>
+                </div>
+                """, unsafe_allow_html=True)
         
         # Exercise Summary
         if entry.get("exercises"):
